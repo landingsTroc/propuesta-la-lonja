@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta La Lonja</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
+<style>
+/* Layout: fixed 1920x1080 stage, scaled to the window. Art direction from landonorris.com
+   (#1E2939 near-black + #86D3A3 acid lime, huge condensed type) over La Lonja's teal/cyan. */
+:root{
+  --bg:#1E2939; --bg2:#243246; --card:#26364B; --line:#34465D; --line2:#46596F;
+  --lime:#86D3A3; --limeInk:#1E2939;
+  --teal:#047D90; --cyan:#38B6B3; --navy:#2F4560; --navy2:#1F3A57;
+  --paper:#EAF7F5; --paper2:#FFFFFF; --ink:#1E2939; --lineL:#CFE6E2;
+  --mD:#A9B8C8; --mL:#4C5E70;
+  --sand:#F6E3A8; --sandInk:#5E4300;
+  --display:'Outfit',Arial,sans-serif;
+  --body:'Outfit',Arial,sans-serif;
+  --mono:'Outfit',Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#141C27;overflow:hidden;font-family:var(--body)}
+#stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+.s{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:none;flex-direction:column;
+   padding:112px 120px 150px;background:var(--bg);color:#F1F2F4;font-size:28px;line-height:1.35}
+.s.on{display:flex}
+.s.light{background:var(--paper);color:var(--ink)}
+.s.limebg{background:var(--lime);color:var(--ink)}
+
+/* ---------- type ---------- */
+.eb{margin:0;display:flex;align-items:center;gap:14px;font:700 21px/1.2 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--lime)}
+.eb::before{content:"";width:34px;height:6px;border-radius:3px;background:currentColor;flex:none}
+.light .eb{color:var(--teal)}
+.limebg .eb{color:var(--ink)}
+.t{margin:16px 0 0;font:800 64px/1.06 var(--display);letter-spacing:-.025em;max-width:1500px;color:#F4F5F6}
+.light .t,.limebg .t{color:var(--ink)}
+.t .hl{color:var(--lime)}
+.light .t .hl{color:var(--teal)}
+.ghost{position:absolute;right:96px;top:30px;font:800 280px/1 var(--display);color:transparent;-webkit-text-stroke:2px rgba(134,211,163,.22);letter-spacing:-.01em;pointer-events:none}
+.light .ghost{-webkit-text-stroke:2px rgba(17,17,18,.10)}
+.limebg .ghost{-webkit-text-stroke:2px rgba(17,17,18,.18)}
+.note{margin:18px 0 0;font-size:22px;line-height:1.4;color:var(--mD)}
+.light .note{color:var(--mL)}
+
+/* ---------- footer ---------- */
+.ft{position:absolute;left:120px;right:120px;bottom:52px;height:56px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);color:#F1F2F4}
+.light .ft{border-top-color:var(--lineL);color:var(--ink)}
+.limebg .ft{border-top-color:rgba(17,17,18,.25);color:var(--ink)}
+.ft .r{display:flex;align-items:center;gap:26px}
+.ft .tx{margin:0;font-size:20px;color:var(--mD)}
+.light .ft .tx,.limebg .ft .tx{color:var(--mL)}
+.ft .pg{margin:0;font:700 20px var(--mono);color:var(--lime)}
+.light .ft .pg{color:var(--teal)}
+.limebg .ft .pg{color:var(--ink)}
+.idt{display:inline-flex;align-items:center;gap:8px;font:600 21px/1 var(--body);letter-spacing:.06em;color:var(--ink)}.idt img{height:30px;width:auto;display:block}.idt.dk{color:#F4F5F6}
+.pill{margin:0;font:700 18px var(--mono);letter-spacing:.1em;background:var(--sand);color:var(--sandInk);padding:6px 18px;border-radius:30px}
+
+/* ---------- cards ---------- */
+.c{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px 30px}
+.light .c{background:var(--paper2);border-color:var(--lineL)}
+.c h3,.c .h{margin:0;font-size:30px;font-weight:800;line-height:1.15;color:#F4F5F6}
+.light .c h3,.light .c .h{color:var(--ink)}
+.c p{margin:10px 0 0;font-size:22px;line-height:1.42;color:var(--mD)}
+.light .c p{color:var(--mL)}
+.ul{margin:14px 0 0;padding-left:26px}
+.ul li{font-size:24px;line-height:1.4;margin-top:8px}
+.ul li::marker{color:var(--lime)}
+.light .ul li::marker{color:var(--teal)}
+.ic{width:40px;height:40px;margin-bottom:10px;color:var(--teal)}
+.chip{display:inline-block;margin:4px 6px 0 0;padding:4px 14px;border-radius:30px;font-size:20px;font-weight:700;background:rgba(82,208,217,.14);color:var(--cyan);border:1px solid rgba(82,208,217,.35)}
+.light .chip{background:#E2F3F2;color:#0A6F7C;border-color:#BFE3E5}
+
+/* ---------- image slots (drop files in img/ with these names) ---------- */
+.slot{position:relative;overflow:hidden;border-radius:22px;border:2px dashed #3E4148;background:repeating-linear-gradient(45deg,#16171A 0 16px,#1B1C20 16px 32px);display:flex;align-items:center;justify-content:center;text-align:center}
+.light .slot{border-color:#C9C9BE;background:repeating-linear-gradient(45deg,#E9E9E1 0 16px,#E3E3DA 16px 32px)}
+.slot .sl{font:700 20px/1.5 var(--mono);color:#7C808A;padding:20px}
+.light .slot .sl{color:#8A8A80}
+.slot .sl b{display:block;color:var(--lime);font-size:22px}
+.light .slot .sl b{color:var(--teal)}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slot.filled{border-style:solid;border-color:transparent}.slot.filled .sl{display:none}
+
+/* ---------- motion ---------- */
+@keyframes up{from{opacity:0;transform:translateY(26px)}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes rise{from{transform:scaleY(0)}}
+@keyframes draw{from{stroke-dashoffset:var(--len,1200)}}
+@keyframes marq{to{transform:translateX(-50%)}}
+.on .a{animation:up .65s cubic-bezier(.2,.7,.2,1) both}
+.on .g{transform-origin:left center;animation:grow .8s cubic-bezier(.2,.7,.2,1) both}
+.on .rz{transform-origin:center bottom;animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+.on .dr{stroke-dasharray:var(--len,1200);animation:draw 1.2s cubic-bezier(.4,0,.2,1) both}
+.d1{animation-delay:.06s!important}.d2{animation-delay:.12s!important}.d3{animation-delay:.18s!important}.d4{animation-delay:.24s!important}
+.d5{animation-delay:.3s!important}.d6{animation-delay:.36s!important}.d7{animation-delay:.42s!important}.d8{animation-delay:.5s!important}
+@media (prefers-reduced-motion:reduce){.on .a,.on .g,.on .rz,.on .dr,.marq-in{animation:none!important}}
+
+/* ===== 01 cover ===== */
+.cover{padding:0}
+.cover .logo{position:absolute;left:112px;top:70px}.lglogo{display:block;height:58px;width:auto}
+.cover .txt{position:absolute;left:120px;top:205px;width:1000px}
+.cover h1{margin:22px 0 0;font:800 80px/1.04 var(--display);letter-spacing:-.03em;color:#F4F5F6}
+.cover h1 .hl{color:var(--lime)}
+.cover .sub{margin:26px 0 0;font-size:30px;line-height:1.4;color:#C7CAD0;width:900px}
+.cover .by{margin:30px 0 0;font-size:26px;color:#C7CAD0}
+.cover .by b{color:#F4F5F6}
+.cover .doc{margin:6px 0 0;font:500 20px var(--mono);letter-spacing:.06em;color:var(--mD)}
+.cover .hero{position:absolute;left:1190px;top:0;width:730px;height:960px;display:grid;grid-template-rows:1.45fr 1fr;gap:10px}.cover .hero .slot{border:none;border-radius:0}.cover .hero .ha{border-radius:0 0 0 0}.cover .hero .hb{border-radius:0 0 0 40px}
+.cover .ring{position:absolute;left:1060px;top:560px;width:260px;height:260px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;text-align:center}
+.cover .ring p{margin:0;font:800 40px/1.02 var(--display);color:var(--ink);letter-spacing:-.02em}
+.marq{position:absolute;left:0;right:0;bottom:0;height:120px;background:var(--lime);overflow:hidden;display:flex;align-items:center}
+.marq-in{display:flex;white-space:nowrap;animation:marq 40s linear infinite}
+.marq-in span{font:700 46px/1 var(--display);letter-spacing:-.02em;color:var(--ink);padding:0 28px}
+.marq-in i{font-style:normal;color:var(--ink);font-size:40px;align-self:center}
+
+/* ===== 02 hoy ===== */
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:30px}
+.g5 .c{padding:26px 24px}
+.g5 .c h3{font-size:28px}
+.row2{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px;margin-top:18px}
+.yr{background:var(--ink)!important;border-color:var(--ink)!important}
+.yr h3{color:#F4F5F6!important;display:flex;align-items:baseline;gap:14px}
+.yr h3 span{font:800 66px/1 var(--display);letter-spacing:-.03em;color:var(--lime)}
+.yr p{color:#C7CAD0!important}
+.yr{position:relative;overflow:hidden;padding:0!important;display:flex;align-items:stretch}
+.yrph{position:absolute;right:0;top:0;width:62%;height:100%;object-fit:cover;object-position:center 40%}
+.yrfade{position:absolute;inset:0;background:linear-gradient(90deg,#1E2939 0%,#1E2939 40%,rgba(30,41,57,.75) 52%,rgba(30,41,57,0) 72%)}
+.yrtx{position:relative;z-index:1;padding:24px 26px;width:64%}
+.yr .yrtx p{font-size:21px}
+.tl2{display:flex;align-items:center;gap:12px;margin-top:14px}
+.tl2 .y{font:800 18px/1 var(--display);color:var(--lime)}
+.tl2 .ln{flex:1;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--lime))}
+.yr .yrcap{position:absolute;right:12px;bottom:10px;z-index:1;margin:0;font:600 15px/1.2 var(--body);color:#fff!important;background:rgba(30,41,57,.72);padding:4px 10px;border-radius:20px}
+.tl{margin-top:16px;position:relative;height:40px}
+.tl .ln{position:absolute;left:0;right:0;top:18px;height:4px;background:linear-gradient(90deg,var(--cyan),var(--lime));border-radius:2px}
+.tl .dt{position:absolute;top:10px;width:20px;height:20px;border-radius:50%;background:var(--lime);border:4px solid var(--ink)}
+.tl .lb{position:absolute;top:-6px;font:700 18px var(--mono);color:var(--mD)}
+
+/* ===== 03 futuro ===== */
+.vs{display:grid;grid-template-columns:1fr 120px 1fr;margin-top:44px;align-items:stretch}
+.past{border:2px dashed var(--line2);border-radius:24px;padding:34px 40px}
+.next{background:var(--card);border:2px solid var(--lime);border-radius:24px;padding:34px 40px;box-shadow:0 0 0 8px rgba(134,211,163,.06)}
+.vs .h{margin:0;font:800 52px/1 var(--display);letter-spacing:-.03em}
+.past .h{color:var(--mD)} .next .h{color:var(--lime)}
+.past li{color:var(--mD)} .past li::marker{color:#5A5E66}
+.arr{display:flex;align-items:center;justify-content:center}
+.vs3{grid-template-columns:1fr 84px 1fr 600px;gap:0;margin-top:34px;align-items:center}
+.vs3 .past,.vs3 .next{padding:28px 30px;align-self:stretch}
+.vs3 .h{font-size:44px}
+.vs3 .ul li{font-size:22px}
+.cyc{margin-left:24px;display:flex;align-items:center;justify-content:center}
+.cyc svg{width:600px;height:530px;overflow:visible}
+@keyframes spinin{from{opacity:0;transform:rotate(-40deg) scale(.85)}}
+.on .cy-seg{transform-origin:300px 262px;animation:spinin .8s cubic-bezier(.2,.7,.2,1) both}
+.on .cy-seg:nth-child(2){animation-delay:.1s}.on .cy-seg:nth-child(3){animation-delay:.2s}.on .cy-seg:nth-child(4){animation-delay:.3s}
+.base{margin-top:26px;display:grid;grid-template-columns:repeat(4,1fr);border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+.base div{padding:22px 10px;text-align:center;background:var(--bg2);border-left:1px solid var(--line);position:relative}
+.base div:first-child{border-left:none}
+.base div::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--cyan)}
+.base div:nth-child(2)::before{background:var(--teal)} .base div:nth-child(3)::before{background:var(--cyan)} .base div:nth-child(4)::before{background:var(--lime)}
+.base p{margin:0;font-size:30px;font-weight:800;color:#F4F5F6}
+
+/* ===== 04 soluciones ===== */
+.sol6{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:40px}
+.sol6 .c{padding:24px 22px;position:relative;display:flex;flex-direction:column}
+.sol6 .n{font:800 84px/.9 var(--display);letter-spacing:-.04em;color:var(--lime);margin:0 0 14px}
+.sol6 h3{font-size:27px}
+.sol6 p{font-size:21px}
+.sol6 .vis{background:transparent;border:2px dashed var(--line2)}
+.sol6 .vis .n{color:#6E727B}
+.stems{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;height:44px}
+.stems div{position:relative}
+.stems div::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;background:var(--lime)}
+.stems div:last-child::before{background:#6E727B}
+.dbbar{border-radius:18px;background:var(--lime);color:var(--ink);padding:22px 30px;display:flex;align-items:center;gap:22px}
+.dbbar p{margin:0;font-size:24px;font-weight:700;line-height:1.35}
+
+/* ===== 05 etapas ===== */
+.step{position:absolute;bottom:150px;width:262px;border-radius:20px 20px 0 0;background:var(--card);border:1px solid var(--line);border-bottom:none;border-top:6px solid var(--lime);padding:24px 22px}
+.step .k{margin:0;font:700 20px var(--mono);letter-spacing:.12em;color:var(--lime)}
+.step h3{margin:10px 0 0;font-size:29px;font-weight:800;line-height:1.15;color:#F4F5F6}
+.step p{margin:10px 0 0;font-size:21px;line-height:1.35;color:var(--mD)}
+.step.vis{border-top-color:#6E727B;border-style:dashed;border-top-style:solid;background:transparent}
+.step.vis .k{color:#9AA0A8}
+.dec{position:absolute;width:30px;height:30px;transform:rotate(45deg);background:var(--bg);border:3px solid var(--lime)}
+.stepnote{position:absolute;left:120px;top:420px;width:560px;margin:0;font-size:28px;line-height:1.4;color:#D5D8DD}
+.stepnote b{color:var(--lime)}
+.lg{position:absolute;left:120px;top:530px;display:flex;align-items:center;gap:12px;font:700 18px var(--mono);color:var(--mD)}
+
+/* ===== 06 cronograma ===== */
+.gh{display:flex;margin-left:540px;width:1140px;margin-top:34px}
+.gh p{margin:0;flex:1;text-align:center;font:700 18px var(--mono);color:var(--mL)}
+.gr{display:flex;align-items:center;height:70px;border-top:1px solid var(--lineL)}
+.gr .gl{width:540px;flex:none;padding-right:20px}
+.gr .gt{margin:0;font-size:25px;font-weight:800;line-height:1.15}
+.gr .gs{margin:0;font-size:20px;color:var(--mL)}
+.tr{position:relative;width:1140px;height:46px;border-radius:10px;background:repeating-linear-gradient(90deg,#DCEFEC 0 94px,#E6F4F1 94px 95px)}
+.bar{position:absolute;top:8px;height:30px;border-radius:15px;background:var(--teal)}
+.bar.prep{background:#7E838C} .bar.five{background:var(--cyan)} .bar.vis{background:#C3C6CC}
+.bar::after{content:"";position:absolute;right:-9px;top:6px;width:16px;height:16px;transform:rotate(45deg);background:var(--paper);border:3px solid var(--ink)}
+.ms{position:absolute;top:0;bottom:0;width:3px;background:var(--ink)}
+.msl{position:absolute;top:-58px;transform:translateX(-50%);white-space:nowrap;font:800 24px/1 var(--display);background:var(--lime);color:var(--ink);padding:8px 14px;border-radius:8px}
+.legend{display:flex;gap:28px;margin-top:14px;font-size:20px;color:var(--mL);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:10px}
+
+/* ===== 07 tablero ===== */
+.dash{display:grid;grid-template-columns:1fr 500px;gap:30px;margin-top:36px;flex:1}
+.mock{background:#F7F8F6;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.mb{display:flex;justify-content:space-between;align-items:center;background:var(--ink);padding:16px 26px;border-bottom:3px solid var(--lime)}
+.mb p{margin:0;font-size:22px;font-weight:700;color:#F4F5F6}
+.mb .mm{color:var(--sand);font-weight:500;font-family:var(--mono);font-size:18px}
+.mg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:22px;flex:1}
+.mp{background:#fff;border:1px solid #DEE3DF;border-radius:16px;padding:20px;display:flex;flex-direction:column}
+.mp .mh{margin:0 0 12px;font-size:22px;font-weight:800;color:var(--ink)}
+.zr{display:flex;align-items:center;gap:12px;margin-top:16px}
+.zr p{margin:0;width:90px;flex:none;font-size:21px;color:var(--mL)}
+.zb{height:20px;border-radius:10px;background:var(--teal)}
+.infos{display:flex;flex-direction:column;gap:16px}
+.infos .c{border-left:6px solid var(--lime)}
+
+/* ===== 08 mision ===== */
+.quote{margin:16px 0 0;font:italic 500 30px/1.35 var(--body);color:var(--teal);max-width:1560px}
+.map{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+.mr{display:grid;grid-template-columns:380px 1fr 520px;align-items:center;gap:30px;background:var(--paper2);border:1px solid var(--lineL);border-radius:18px;padding:11px 26px}
+.mr .v{margin:0;font:800 32px/1.05 var(--display);letter-spacing:-.02em;color:var(--ink)}
+.mr .d{margin:0;font-size:22px;line-height:1.4;color:var(--mL)}
+.mhd{display:grid;grid-template-columns:380px 1fr 520px;gap:30px;padding:0 26px;font:700 18px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mL)}
+.mhd p{margin:0}
+.purpose{margin-top:16px;background:var(--ink);border-radius:20px;padding:22px 30px;display:flex;gap:30px;align-items:center}
+.purpose h3{margin:0;font-size:28px;font-weight:800;color:var(--lime);flex:none;width:560px}
+.purpose p{margin:0;font-size:22px;line-height:1.4;color:#D5D8DD}
+
+/* ===== tables (09, 10, 11) ===== */
+.tb{width:100%;border-collapse:separate;border-spacing:0;margin-top:30px}
+.tb th{text-align:left;font:700 18px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:14px 18px;color:var(--mD);border-bottom:2px solid var(--line2)}
+.light .tb th{color:var(--mL);border-bottom-color:var(--ink)}
+.tb td{font-size:21px;line-height:1.32;padding:12px 18px;vertical-align:top;border-bottom:1px solid var(--line);color:#D9DBE0}
+.light .tb td{border-bottom-color:var(--lineL);color:var(--ink)}
+.tb td.k{font-weight:800;color:#F4F5F6}
+.light .tb td.k{color:var(--ink)}
+.tb tr.hi td{background:var(--lime);color:var(--ink);font-weight:700;border-bottom:none}
+.tb tr.hi td:first-child{border-radius:14px 0 0 14px}
+.tb tr.hi td:last-child{border-radius:0 14px 14px 0}
+.light .tb tr.hi td{background:var(--ink);color:#F4F5F6}
+.light .tb tr.hi td.k{color:var(--lime)}
+.em{color:var(--teal);font-weight:800}.tb9 td{font-size:24px;padding:17px 18px}.tb9 .chip{font-size:21px}
+
+/* ===== 11 oportunidad fintech ===== */
+.finsub{margin:18px 0 0;font-size:26px;line-height:1.45;color:#D3DCE6;max-width:1480px}
+.fin{display:grid;grid-template-columns:440px 1fr;gap:26px;margin-top:30px}
+.proof{background:var(--lime);color:var(--ink);border-radius:24px;padding:28px 32px}
+.proof .pk{margin:0;font-size:20px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.proof .pbig{margin:18px 0 0;font:800 68px/1 var(--display);letter-spacing:-.04em}
+.proof .plb{margin:6px 0 0;font-size:21px;line-height:1.35;font-weight:500}
+.proof .pdiv{height:2px;background:rgba(30,41,57,.25);margin-top:22px}
+.model{display:flex;flex-direction:column}
+.model .mk{margin:0 0 14px;font-size:20px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--lime)}
+.msteps{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr;align-items:stretch;flex:1}
+.mst{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px 22px}
+.mst .mn{margin:0;width:46px;height:46px;border-radius:50%;background:var(--bg2);border:2px solid var(--lime);color:var(--lime);font:800 22px/42px var(--display);text-align:center}
+.mst h3{margin:16px 0 0;font-size:27px;font-weight:800;line-height:1.15;color:#F4F5F6}
+.mst p{margin:10px 0 0;font-size:21px;line-height:1.4;color:var(--mD)}
+.mst.hi{border:2px solid var(--lime);box-shadow:0 0 0 8px rgba(134,211,163,.08)}
+.mar{display:flex;align-items:center;justify-content:center}
+.tease{margin-top:24px;border-left:6px solid var(--lime);padding:6px 0 6px 24px}
+.tease p{margin:0;font-size:24px;line-height:1.45;color:#D3DCE6}
+.tease b{color:#F4F5F6}
+
+/* ===== 11 ganancia ===== */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:34px}
+.who{margin:0;font:800 42px/1.05 var(--display);letter-spacing:-.025em}
+.c .who{font:800 42px/1.05 var(--display);letter-spacing:-.025em}.who.c1{color:var(--cyan)!important} .who.c2{color:var(--lime)!important}
+.flow3{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.fr3{display:grid;grid-template-columns:440px 80px 1fr;align-items:center}
+.fr3 .src{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px 20px;font-size:24px;font-weight:800;color:#F4F5F6}
+.fr3 .to{display:flex;justify-content:center}
+.fr3 .rev{border-left:4px solid var(--lime);padding:8px 0 8px 20px;font-size:22px;color:#D9DBE0}
+.fhd{display:grid;grid-template-columns:440px 80px 1fr;font:700 18px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mD);margin-top:26px}
+.fhd p{margin:0}
+
+/* ===== 12 alianza ===== */
+.p3{display:grid;grid-template-columns:1fr 64px 1fr 64px 1fr;margin-top:34px;align-items:stretch}
+.pc{background:var(--paper2);border:1px solid var(--lineL);border-radius:22px;padding:24px 26px;display:flex;flex-direction:column}
+.pc .top{display:flex;align-items:center;gap:18px}
+.pc .slot{width:96px;height:96px;border-radius:50%;flex:none}
+.pc .slot .sl{font-size:13px;padding:6px;line-height:1.3}
+.pc .slot .sl b{font-size:14px}.pc .slot.filled{background:#fff;border:1px solid var(--lineL)}.pc .slot img{object-fit:contain;padding:12px}
+.pc .who{font-size:34px;color:var(--ink)}
+.pc .ul li{font-size:22px;color:var(--mL)}
+.plus{display:flex;align-items:center;justify-content:center}
+.pr3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.pr3 .c{border-top:6px solid var(--teal)}
+
+/* ===== 13 alianza (diagram) ===== */
+.ally{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:84px}
+.ally-line{position:absolute;left:12%;right:12%;top:0;height:4px;border-radius:2px;background:linear-gradient(90deg,#38B6B3,#1E7B3C 50%,#2F6FB5)}
+.aplus{position:absolute;top:-22px;width:44px;height:44px;margin-left:-22px;border-radius:50%;background:var(--ink);color:var(--lime);font:800 30px/42px var(--display);text-align:center;z-index:2}
+.ap{position:relative;background:var(--paper2);border:1px solid var(--lineL);border-radius:24px;padding:72px 28px 24px;box-shadow:0 14px 34px rgba(30,41,57,.08)}
+.ap::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;border-radius:24px 24px 0 0;background:var(--pc)}
+.p-ll{--pc:#38B6B3;--pt:rgba(56,182,179,.14)} .p-id{--pc:#1E7B3C;--pt:rgba(30,123,60,.12)} .p-gr{--pc:#2F6FB5;--pt:rgba(47,111,181,.12)}
+.ap .alogo{position:absolute;left:50%;top:-56px;margin-left:-56px;width:112px;height:112px;border-radius:50%;background:#fff;border:4px solid var(--pc)!important;box-shadow:0 8px 20px rgba(30,41,57,.12)}
+.ap .alogo .sl{font-size:12px;padding:6px;line-height:1.25}
+.ap .alogo .sl b{font-size:13px}
+.ap .alogo img{object-fit:contain;padding:16px}.p-gr .alogo img{padding:9px}
+.ap .an{margin:0 0 14px;text-align:center;font:800 32px/1.1 var(--display);letter-spacing:-.02em;color:var(--ink)}
+.ci{display:flex;align-items:center;gap:16px;padding:11px 0;border-top:1px solid var(--lineL)}
+.cic{flex:none;width:50px;height:50px;border-radius:14px;background:var(--pt);color:var(--pc);display:flex;align-items:center;justify-content:center}
+.cic svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ci p{margin:0;font-size:21px;line-height:1.35;color:var(--ink)}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:22px}
+.rl{display:flex;align-items:center;gap:20px;background:rgba(56,182,179,.10);border:1px solid #BFE5E1;border-radius:20px;padding:18px 22px}
+.rl .rv{flex:none;width:120px;height:80px}
+.rl h3{margin:0;font-size:25px;font-weight:800;color:var(--ink)}
+.rl p{margin:6px 0 0;font-size:19px;line-height:1.38;color:var(--mL)}
+
+/* ===== 08 misión (flow) ===== */
+.mflow{position:relative;width:1680px;height:560px;margin-top:50px}
+.mf-band{position:absolute;left:0;top:228px;width:1150px;height:62px;border-radius:31px 0 0 31px;background:linear-gradient(90deg,#86D3A3,#38B6B3 45%,#047D90)}
+.mf-head{position:absolute;left:1148px;top:184px}
+.mf-col{position:absolute;top:0;width:290px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.mf-sol{height:126px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.mf-sol .chip{margin:0;font-size:18px;background:#FFFFFF;border-color:#BFE3E5}
+.mf-v{margin:12px 0 0;height:48px;display:flex;align-items:flex-end;font:800 26px/1.1 var(--display);letter-spacing:-.02em;color:var(--ink);padding:0 10px}
+.mf-node{margin-top:14px;width:118px;height:118px;border-radius:50%;background:#FFFFFF;border:8px solid #38B6B3;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(30,41,57,.14);position:relative;z-index:1}
+.mf-node svg{width:48px;height:48px;fill:none;stroke:#047D90;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mf-d{margin:18px 0 0;width:262px;font-size:19px;line-height:1.4;color:var(--mL)}
+.mf-goal{position:absolute;left:1250px;top:34px;width:430px;height:450px;border-radius:50%;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 52px;box-shadow:0 0 0 14px rgba(134,211,163,.35)}
+.mf-goal h3{margin:0;font:600 22px/1.25 var(--display);color:#C9D4DF}
+.mf-goal h3 span{display:block;margin-top:6px;font:800 36px/1.08 var(--display);letter-spacing:-.02em;color:var(--lime)}
+.mf-goal p{margin:16px 0 0;font-size:18px;line-height:1.4;color:#C9D4DF}
+.mf-legend{position:absolute;left:0;bottom:0;display:flex;gap:32px;font-size:17px;color:var(--mL)}
+.mf-legend span{display:inline-flex;align-items:center;gap:10px}
+.mf-legend .chip{margin:0;font-style:normal;font-size:14px;padding:2px 10px}
+.mf-legend .lg-v{font:800 18px var(--display);color:var(--ink)}
+.mf-legend .lg-d{color:var(--mL)}
+
+/* ===== 15 cierre (statement) ===== */
+.closing{padding:0;justify-content:center}
+.cl-art{position:absolute;left:0;top:0}
+.cl-in{position:relative;padding:0 120px;margin-top:-40px}
+.cl-l{margin:0;font:800 104px/1.04 var(--display);letter-spacing:-.04em;color:var(--lime)}
+.cl-l span{color:#F4F5F6}
+.cl-go{margin-top:34px;font-size:124px;color:#F4F5F6;display:inline-block;padding:6px 28px 14px;margin-left:-28px;background:var(--lime);color:var(--ink);border-radius:20px}
+.cl-p{margin:30px 0 0;font:500 32px/1.3 var(--body);color:#C9D4DF}
+.cl-logos{position:absolute;left:120px;bottom:70px;display:flex;align-items:center;gap:34px}
+.cl-ll{height:64px;width:auto}
+.cl-id{height:44px;width:auto}
+.cl-gr{display:inline-flex;align-items:center;background:#F4F5F6;border-radius:12px;padding:6px 12px}
+.cl-gr img{height:48px;width:auto}
+.cl-sep{width:1px;height:44px;background:#46596F}
+
+/* ===== 13 pasos (lime statement) ===== */
+.track{margin-top:44px;position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.track .rail{position:absolute;left:40px;right:40px;top:40px;height:4px;background:var(--ink)}
+.ps{position:relative}
+.ps .num{width:84px;height:84px;border-radius:50%;background:var(--ink);color:var(--lime);font:800 40px/84px var(--display);text-align:center;margin:0 0 22px}
+.ps .box{background:rgba(30,41,57,.08);border-radius:20px;padding:30px 28px 32px;min-height:250px;border:2px solid rgba(17,17,18,.14)}
+.ps h3{margin:0;font-size:36px;font-weight:800;line-height:1.15;color:var(--ink)}
+.ps p{margin:14px 0 0;font-size:25px;line-height:1.4;color:#2A2B2E}
+.need{margin-top:26px;background:var(--ink);border-radius:22px;padding:22px 32px 22px 22px;display:grid;grid-template-columns:300px 380px 1fr;gap:32px;align-items:center}.need .nimg{height:210px;border-radius:14px;border:none}
+.need h3{margin:0;font:800 36px/1.08 var(--display);letter-spacing:-.02em;color:var(--lime)}
+.need p{margin:0;font-size:24px;line-height:1.45;color:#E3E5E9}
+
+/* ---------- viewer UI ---------- */
+#prog{position:fixed;left:0;top:0;height:4px;background:var(--lime);transition:width .35s ease;z-index:5}
+#hud{position:fixed;right:16px;bottom:14px;display:flex;align-items:center;gap:6px;font:700 13px var(--mono);color:#8A8E96;z-index:5}
+#hud button{background:#1D1E22;color:#F1F2F4;border:1px solid #33353B;border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit}
+#hud button:hover{border-color:var(--lime);color:var(--lime)}
+#hud button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+#ov{position:fixed;inset:0;background:rgba(5,5,6,.96);z-index:9;display:none;overflow:auto;padding:40px}
+#ov.open{display:block}
+#ov h2{margin:0 0 20px;font:800 36px var(--display);color:var(--lime)}
+#ov .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+#ov .th{cursor:pointer;border:2px solid #2D2F35;border-radius:12px;overflow:hidden;background:#1E2939;position:relative;aspect-ratio:16/9}
+#ov .th:hover,#ov .th.cur{border-color:var(--lime)}
+#ov .th .mini{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;pointer-events:none}
+#ov .th .mini .s{display:flex}
+#ov .th .mini .s *{animation:none!important}
+#ov .th .no{position:absolute;left:10px;bottom:8px;font:700 14px var(--mono);background:var(--lime);color:#111;padding:2px 8px;border-radius:6px;z-index:2}
+#hint{position:fixed;left:16px;bottom:14px;font:500 12px var(--mono);color:#5E626B;z-index:5}
+
+@media print{
+  @page{size:1920px 1080px;margin:0}
+  html,body{height:auto;overflow:visible;background:none}
+  #stage{position:static;transform:none!important;width:auto;height:auto}
+  .s{display:flex!important;position:relative;break-after:page}
+  .s *{animation:none!important}
+  #hud,#ov,#prog,#hint{display:none!important}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="stage">
+
+<!-- ================= 01 COVER ================= -->
+<section class="s cover" data-title="Portada">
+  <div class="hero"><div class="slot ha" data-img="img/01-portada-a.jpg"><p class="sl"><b>Imagen</b>img/01-portada-a.jpg</p></div><div class="slot hb" data-img="img/01-portada-b.jpg"><p class="sl"><b>Imagen</b>img/01-portada-b.jpg</p></div></div>
+  <img class="logo a" src="img/logo-lalonja-white.png" width="300" height="129" alt="La Lonja, El gremio inmobiliario">
+  <div class="txt">
+    <p class="eb a d1">PROPUESTA DE ALIANZA · NOVIEMBRE DE 2026</p>
+    <h1 class="a d2">La información de La Lonja, convertida en <span class="hl">productos para el sector</span></h1>
+    <p class="sub a d3">Un camino por etapas para el centro de investigación inmobiliaria, empezando por un tablero de indicadores.</p>
+    <p class="by a d4">Presentan <b>ID Technology</b> y <b>Grow</b></p>
+    <p class="doc a d5">Documento de trabajo para conversación</p>
+  </div>
+  <div class="marq" aria-hidden="true"><div class="marq-in">
+    <span>Avalúos</span><i>✦</i><span>Administración de propiedades</span><i>✦</i><span>Proyectos de construcción</span><i>✦</i><span>Derecho inmobiliario</span><i>✦</i><span>Arrendamiento y corretaje</span><i>✦</i>
+    <span>Avalúos</span><i>✦</i><span>Administración de propiedades</span><i>✦</i><span>Proyectos de construcción</span><i>✦</i><span>Derecho inmobiliario</span><i>✦</i><span>Arrendamiento y corretaje</span><i>✦</i>
+  </div></div>
+</section>
+
+<!-- ================= 02 HOY ================= -->
+<section class="s light" data-title="Dónde está La Lonja hoy">
+  <div class="ghost">02</div>
+  <p class="eb a">DÓNDE ESTÁ LA LONJA HOY</p>
+  <h2 class="t a d1" style="font-size:58px">La Lonja tiene <span class="hl">casi 60 años</span> de información que nadie más tiene</h2>
+  <div class="g5">
+    <div class="c a d2"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22 24 8l18 14"/><path d="M11 19v21h26V19"/><path d="M20 40V28h8v12"/></svg><h3>Avalúos</h3><p>Histórico de valor del suelo y de los avalúos realizados.</p></div>
+    <div class="c a d3"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="10" y="6" width="28" height="36" rx="2"/><path d="M17 14h4M27 14h4M17 22h4M27 22h4M17 30h4M27 30h4M22 42v-6h4v6"/></svg><h3>Administración de propiedades</h3><p>Propiedad horizontal e inmuebles administrados por afiliados.</p></div>
+    <div class="c a d4"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 42V8l26 6H12"/><path d="M30 14v8M26 22h8v6h-8z"/><path d="M6 42h30"/></svg><h3>Proyectos de construcción</h3><p>Promoción, gerencia y construcción en la región.</p></div>
+    <div class="c a d5"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 6v36M14 42h20M10 12h28"/><path d="M10 12 4 26h12zM38 12l-6 14h12z"/></svg><h3>Derecho inmobiliario</h3><p>Criterio legal y conciliación del gremio.</p></div>
+    <div class="c a d6"><svg class="ic" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="24" r="9"/><path d="M25 24h18M37 24v7M43 24v5"/></svg><h3>Arrendamiento y corretaje</h3><p>Negocios cerrados por los afiliados y su red.</p></div>
+  </div>
+  <div class="row2">
+    <div class="c yr a d4"><img class="yrph" src="img/02-medellin-1967.jpg" alt="Medellín en 1967"><div class="yrfade"></div><div class="yrtx"><h3>Desde <span>1967</span></h3><p>Vocero calificado y sello de confianza del sector en Medellín y Antioquia.</p><div class="tl2"><span class="y">1967</span><div class="ln g d6"></div><span class="y">2026</span></div></div><p class="yrcap">Medellín, 1967</p></div>
+    <div class="c a d5" style="border-top:6px solid var(--teal)"><h3>Una red que ya confía</h3><p>Cientos de empresas y profesionales afiliados en cinco subsectores.</p></div>
+    <div class="c a d6" style="border-top:6px solid var(--teal)"><h3>Estudios que ya se publican</h3><p>Hoy salen como documentos. El siguiente paso es que se puedan consultar, cruzar y comprar.</p></div>
+    <div class="slot a d7" data-img="img/02-la-lonja.jpg"><p class="sl"><b>Imagen</b>img/02-la-lonja.jpg<br>390 × 260 px</p></div>
+  </div>
+  <p class="note">Las cifras exactas de cada fuente se confirman en el inventario de datos (primer paso de la propuesta).</p>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-navy.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt"><img src="img/logo-id-color.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">02</p></div></div>
+</section>
+
+<!-- ================= 03 FUTURO ================= -->
+<section class="s" data-title="Cómo lo vemos a futuro">
+  <div class="ghost">03</div>
+  <p class="eb a">CÓMO LO VEMOS A FUTURO</p>
+  <h2 class="t a d1">De información guardada a un centro que <span class="hl">informa y mueve el mercado</span></h2>
+  <div class="vs vs3">
+    <div class="past a d2"><h3 class="h">Hoy</h3><ul class="ul"><li>La información vive en archivos y estudios periódicos.</li><li>Consultarla depende de personas y de tiempo.</li><li>El afiliado la recibe, pero no la puede usar para decidir en el momento.</li><li>Su valor económico no se captura.</li></ul></div>
+    <div class="arr a d3"><svg width="96" height="96" viewBox="0 0 96 96" aria-label="De hoy a mañana"><circle cx="48" cy="48" r="46" fill="#86D3A3"/><path d="M28 48h38M52 33l15 15-15 15" fill="none" stroke="#1E2939" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="next a d4"><h3 class="h">Mañana</h3><ul class="ul"><li>Una base propia, ordenada y actualizada.</li><li>Indicadores por zona disponibles en línea para afiliados y compradores.</li><li>Análisis y modelos que ayudan a evaluar proyectos, avalúos e inversiones.</li><li>Ingresos nuevos que La Lonja reinvierte en sus afiliados.</li></ul></div>
+    <div class="cyc a d5">
+      <svg viewBox="0 0 600 530" width="600" height="530" aria-label="Ciclo: Finanzas, Tecnología, Datos y Modelos predictivos">
+        <g class="cy-seg"><path d="M188.8,129.5 A173,173 0 0 1 347.7,95.7 L352.1,80.3 L371.1,143.7 L324.0,178.4 L328.4,163.0 A103,103 0 0 0 233.8,183.1 Z" fill="#86D3A3"/></g>
+        <g class="cy-seg"><path d="M432.5,150.8 A173,173 0 0 1 466.3,309.7 L481.7,314.1 L418.3,333.1 L383.6,286.0 L399.0,290.4 A103,103 0 0 0 378.9,195.8 Z" fill="#38B6B3"/></g>
+        <g class="cy-seg"><path d="M411.2,394.5 A173,173 0 0 1 252.3,428.3 L247.9,443.7 L228.9,380.3 L276.0,345.6 L271.6,361.0 A103,103 0 0 0 366.2,340.9 Z" fill="#0A93A3"/></g>
+        <g class="cy-seg"><path d="M167.5,373.2 A173,173 0 0 1 133.7,214.3 L118.3,209.9 L181.7,190.9 L216.4,238.0 L201.0,233.6 A103,103 0 0 0 221.1,328.2 Z" fill="#6FA0DB"/></g>
+        <g font-family="Outfit, Arial, sans-serif" font-weight="800" font-size="30" text-anchor="middle">
+          <text x="271" y="138" fill="#1E2939">01</text><text x="435" y="244" fill="#1E2939">02</text><text x="329" y="408" fill="#FFFFFF">03</text><text x="165" y="301" fill="#1E2939">04</text>
+        </g>
+        <circle cx="300" cy="262" r="84" fill="#26364B" stroke="#34465D" stroke-width="2"/>
+        <image href="img/mark-lalonja-white.png" x="252" y="214" width="96" height="96"/>
+        <g fill="none" stroke="#A9B8C8" stroke-width="2" stroke-dasharray="5 5">
+          <path d="M263,87 V40 H150"/><path d="M475,225 H535 V150"/><path d="M337,437 V492 H440"/><path d="M125,299 H70 V388"/>
+        </g>
+        <g fill="#A9B8C8"><circle cx="150" cy="40" r="5"/><circle cx="535" cy="150" r="5"/><circle cx="440" cy="492" r="5"/><circle cx="70" cy="388" r="5"/></g>
+        <g fill="none" stroke="#F4F5F6" stroke-width="2.5"><circle cx="263" cy="87" r="5"/><circle cx="475" cy="225" r="5"/><circle cx="337" cy="437" r="5"/><circle cx="125" cy="299" r="5"/></g>
+        <g font-family="Outfit, Arial, sans-serif" font-weight="800" font-size="26" fill="#F4F5F6">
+          <text x="138" y="49" text-anchor="end">Finanzas</text>
+          <text x="535" y="134" text-anchor="middle">Tecnología</text>
+          <text x="454" y="501">Datos</text>
+          <text x="24" y="422">Modelos</text><text x="24" y="452">predictivos</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">03</p></div></div>
+</section>
+
+<!-- ================= 04 SOLUCIONES ================= -->
+<section class="s" data-title="Qué proponemos">
+  <div class="ghost">04</div>
+  <p class="eb a">QUÉ PROPONEMOS</p>
+  <h2 class="t a d1"><span class="hl">Seis soluciones</span> que se construyen sobre los mismos datos</h2>
+  <div class="sol6">
+    <div class="c a d2"><p class="n">1</p><h3>Tablero de indicadores</h3><p>Precio por metro cuadrado por zona, históricos y comparaciones, por suscripción.</p></div>
+    <div class="c a d3"><p class="n">2</p><h3>Avalúo asistido</h3><p>Comparables y valor estimado a partir del histórico de avalúos de La Lonja.</p></div>
+    <div class="c a d4"><p class="n">3</p><h3>Factibilidad de proyectos</h3><p>Modelos para medir la viabilidad de un proyecto de construcción antes de lanzarlo.</p></div>
+    <div class="c a d5"><p class="n">4</p><h3>Asesor de derecho inmobiliario</h3><p>Asistente con inteligencia artificial para consultas y solicitudes de afiliados.</p></div>
+    <div class="c a d6"><p class="n">5</p><h3>Estudios de mercado por zona</h3><p>Factibilidad de apertura de negocios según quién vive y qué hay en cada zona.</p></div>
+    <div class="c vis a d7"><p class="n">6</p><h3>Vehículo de inversión</h3><p>Estudio de factibilidad legal y financiera de un fondo inmobiliario. Es la visión de largo plazo.</p></div>
+  </div>
+  <div class="stems a d7"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  <div class="dbbar a d8"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="#1E2939" stroke-width="3.5" aria-hidden="true"><ellipse cx="26" cy="12" rx="18" ry="6"/><path d="M8 12v28c0 3.3 8 6 18 6s18-2.7 18-6V12"/><path d="M8 26c0 3.3 8 6 18 6s18-2.7 18-6"/></svg><p>El orden es el de construcción: cada solución aprovecha la base de datos y lo aprendido en la anterior.</p></div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">04</p></div></div>
+</section>
+
+<!-- ================= 05 ETAPAS ================= -->
+<section class="s" data-title="Cómo llegamos">
+  <div class="ghost">05</div>
+  <p class="eb a">CÓMO LLEGAMOS</p>
+  <h2 class="t a d1" style="max-width:1080px">Un camino por etapas, con algo <span class="hl">funcionando desde la primera</span></h2>
+  <p class="stepnote a d2">Al final de cada etapa <b>La Lonja decide</b> si se sigue y con qué alcance.</p>
+  <svg style="position:absolute;left:0;top:0" width="1920" height="1080" aria-hidden="true"><polyline class="dr" style="--len:1500" points="251,590 534,526 817,462 1100,398 1383,334 1666,270" fill="none" stroke="#86D3A3" stroke-width="3" stroke-dasharray="1500" stroke-linecap="round"/></svg>
+  <div class="step rz d1" style="left:120px;height:340px"><p class="k">ETAPA 1</p><h3>Tablero de indicadores</h3><p>Primer producto y vitrina de los 60 años</p></div>
+  <div class="step rz d2" style="left:403px;height:404px"><p class="k">ETAPA 2</p><h3>Avalúo asistido</h3><p>Para La Lonja y sus avaluadores</p></div>
+  <div class="step rz d3" style="left:686px;height:468px"><p class="k">ETAPA 3</p><h3>Factibilidad de proyectos</h3><p>Análisis y modelos para constructoras</p></div>
+  <div class="step rz d4" style="left:969px;height:532px"><p class="k">ETAPA 4</p><h3>Asesor de derecho inmobiliario</h3><p>Servicio al afiliado</p></div>
+  <div class="step rz d5" style="left:1252px;height:596px"><p class="k">ETAPA 5</p><h3>Estudios de mercado</h3><p>Con convenios y autorizaciones de datos</p></div>
+  <div class="step vis rz d6" style="left:1535px;height:660px"><p class="k">VISIÓN</p><h3>Vehículo de inversión</h3><p>Se estudia, no se promete</p></div>
+  <div class="dec a d6" style="left:374px;top:575px"></div><div class="dec a d6" style="left:657px;top:511px"></div><div class="dec a d7" style="left:940px;top:447px"></div><div class="dec a d7" style="left:1223px;top:383px"></div><div class="dec a d8" style="left:1506px;top:319px"></div>
+  <div class="lg a d6"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="4" y="4" width="14" height="14" transform="rotate(45 11 11)" fill="#1E2939" stroke="#86D3A3" stroke-width="3"/></svg>La Lonja decide</div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">05</p></div></div>
+</section>
+
+<!-- ================= 06 CRONOGRAMA ================= -->
+<section class="s light" data-title="Cuándo">
+  <div class="ghost">06</div>
+  <p class="eb a">CUÁNDO</p>
+  <h2 class="t a d1" style="font-size:58px">En <span class="hl">tres meses</span> hay tablero y en <span class="hl">un año</span> están las cinco soluciones</h2>
+  <div class="gh a d2" style="margin-top:84px"><p>Mes 1</p><p>Mes 2</p><p>Mes 3</p><p>Mes 4</p><p>Mes 5</p><p>Mes 6</p><p>Mes 7</p><p>Mes 8</p><p>Mes 9</p><p>Mes 10</p><p>Mes 11</p><p>Mes 12</p></div>
+  <div style="position:relative">
+    <div class="gr a d2"><div class="gl"><p class="gt">Alistamiento de datos</p><p class="gs">Confidencialidad, inventario y base unificada</p></div><div class="tr"><div class="bar prep g d3" style="left:0;width:142px"></div></div></div>
+    <div class="gr a d3"><div class="gl"><p class="gt">1. Tablero de indicadores</p><p class="gs">Primer producto en línea</p></div><div class="tr"><div class="bar g d4" style="left:142px;width:143px"></div></div></div>
+    <div class="gr a d3"><div class="gl"><p class="gt">2. Avalúo asistido</p><p class="gs">Piloto con avaluadores de La Lonja</p></div><div class="tr"><div class="bar g d4" style="left:285px;width:237px"></div></div></div>
+    <div class="gr a d4"><div class="gl"><p class="gt">3. Factibilidad de proyectos</p><p class="gs">Análisis y modelos</p></div><div class="tr"><div class="bar g d5" style="left:427px;width:285px"></div></div></div>
+    <div class="gr a d4"><div class="gl"><p class="gt">4. Asesor de derecho inmobiliario</p><p class="gs">Servicio al afiliado</p></div><div class="tr"><div class="bar g d5" style="left:570px;width:237px"></div></div></div>
+    <div class="gr a d5"><div class="gl"><p class="gt">5. Estudios de mercado</p><p class="gs">Sujeto a convenios y autorizaciones</p></div><div class="tr"><div class="bar five g d6" style="left:807px;width:238px"></div></div></div>
+    <div class="gr a d5"><div class="gl"><p class="gt">Visión: vehículo de inversión</p><p class="gs">Estudio de factibilidad</p></div><div class="tr"><div class="bar vis g d6" style="left:950px;width:182px"></div></div></div>
+    <div class="ms a d7" style="left:825px"><p class="msl">tres meses</p></div>
+    <div class="ms a d8" style="left:1678px"><p class="msl" style="transform:translateX(-90%)">un año</p></div>
+  </div>
+  <div class="legend a d6"><span><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="3" width="12" height="12" transform="rotate(45 9 9)" fill="#EAF7F5" stroke="#1E2939" stroke-width="3"/></svg>Decisión de La Lonja</span></div>
+  <p class="note" style="margin-top:8px">Cronograma estimado. Se confirma cuando se conozca el estado de la información. Cada barra termina con una decisión de La Lonja.</p>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-navy.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt"><img src="img/logo-id-color.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">06</p></div></div>
+</section>
+
+<!-- ================= 07 TABLERO ================= -->
+<section class="s" data-title="Por dónde empezamos">
+  <div class="ghost">07</div>
+  <p class="eb a">POR DÓNDE EMPEZAMOS</p>
+  <h2 class="t a d1">El tablero de indicadores es el <span class="hl">primer producto</span></h2>
+  <div class="dash">
+    <div class="mock a d2">
+      <div class="mb"><p>La Lonja · Indicadores inmobiliarios</p><p class="mm">Maqueta ilustrativa, sin datos reales</p></div>
+      <div class="mg">
+        <div class="mp"><p class="mh">Precio por m² por zona</p>
+          <div class="zr"><p>Zona A</p><div class="zb g d3" style="width:180px"></div></div>
+          <div class="zr"><p>Zona B</p><div class="zb g d3" style="width:164px;opacity:.85"></div></div>
+          <div class="zr"><p>Zona C</p><div class="zb g d4" style="width:138px;opacity:.7"></div></div>
+          <div class="zr"><p>Zona D</p><div class="zb g d4" style="width:104px;opacity:.55"></div></div>
+          <div class="zr"><p>Zona E</p><div class="zb g d5" style="width:84px;opacity:.45"></div></div>
+        </div>
+        <div class="mp"><p class="mh">Evolución histórica</p><svg width="100%" height="300" viewBox="0 0 300 300" preserveAspectRatio="none" aria-label="Gráfico de líneas ilustrativo"><defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B8A9A" stop-opacity=".35"/><stop offset="1" stop-color="#0B8A9A" stop-opacity="0"/></linearGradient></defs><g stroke="#E7ECE8" stroke-width="2"><line x1="0" y1="60" x2="300" y2="60"/><line x1="0" y1="140" x2="300" y2="140"/><line x1="0" y1="220" x2="300" y2="220"/></g><line x1="0" y1="290" x2="300" y2="290" stroke="#CDD5D0" stroke-width="2"/><path d="M8 252 L48 236 L88 228 L124 196 L158 202 L196 150 L240 110 L290 62 L290 290 L8 290 Z" fill="url(#ar)"/><polyline class="dr" style="--len:420" points="8,262 48,248 88,240 124,208 158,214 196,174 240,142 290,110" fill="none" stroke="#9FCC00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="420"/><polyline class="dr" style="--len:420" points="8,252 48,236 88,228 124,196 158,202 196,150 240,110 290,62" fill="none" stroke="#0B8A9A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="420"/><circle cx="290" cy="62" r="9" fill="#0B8A9A"/></svg></div>
+        <div class="mp"><p class="mh">Comparar zonas</p><svg width="100%" height="300" viewBox="0 0 300 300" aria-label="Gráfico de columnas ilustrativo"><line x1="0" y1="290" x2="300" y2="290" stroke="#CDD5D0" stroke-width="2"/><g class="rz d3"><rect x="18" y="170" width="52" height="120" rx="8" fill="#52D0D9"/></g><g class="rz d4"><rect x="88" y="118" width="52" height="172" rx="8" fill="#0B8A9A"/></g><g class="rz d5"><rect x="158" y="196" width="52" height="94" rx="8" fill="#52D0D9"/></g><g class="rz d6"><rect x="228" y="70" width="52" height="220" rx="8" fill="#1E2939"/></g></svg></div>
+      </div>
+    </div>
+    <div class="infos">
+      <div class="c a d3"><h3>Qué muestra</h3><p>Precio por metro cuadrado por zona, series históricas, comparación entre zonas y tipo de inmueble.</p></div>
+      <div class="c a d4"><h3>Para quién</h3><p>Afiliados, constructoras, bancos, avaluadores e inversionistas.</p></div>
+      <div class="c a d5"><h3>Cómo se accede</h3><p>En línea, con usuario y suscripción. Una versión pública sirve de vitrina en los 60 años de La Lonja.</p></div>
+    </div>
+  </div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">07</p></div></div>
+</section>
+
+<!-- ================= 08 MISIÓN ================= -->
+<section class="s light" data-title="Por qué">
+  <div class="ghost">08</div>
+  <p class="eb a">POR QUÉ</p>
+  <h2 class="t a d1" style="font-size:58px">Cada solución responde a la <span class="hl">misión de La Lonja</span></h2>
+  <p class="quote a d2">"Representamos, profesionalizamos, fortalecemos y somos voceros calificados de la actividad inmobiliaria."</p>
+  <div class="mflow">
+    <div class="mf-band g d2"></div>
+    <svg class="mf-head a d3" width="96" height="150" viewBox="0 0 96 150" aria-hidden="true"><path d="M0 0 L96 75 L0 150 Z" fill="#047D90"/></svg>
+    <!-- 1 -->
+    <div class="mf-col a d3" style="left:0">
+      <div class="mf-sol"><span class="chip">Tablero de indicadores</span></div>
+      <p class="mf-v">Representar</p>
+      <div class="mf-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V4M4 4h13l-3 4 3 4H4"/></svg></div>
+      <p class="mf-d">La Lonja habla del mercado con cifras propias, actualizadas y consultables.</p>
+    </div>
+    <!-- 2 -->
+    <div class="mf-col a d4" style="left:290px">
+      <div class="mf-sol"><span class="chip">Avalúo asistido,</span><span class="chip">asesor de derecho inmobiliario</span></div>
+      <p class="mf-v">Profesionalizar</p>
+      <div class="mf-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c2 2 10 2 12 0v-5M22 9v6"/></svg></div>
+      <p class="mf-d">El afiliado trabaja con herramientas y criterios comunes, no con intuición.</p>
+    </div>
+    <!-- 3 -->
+    <div class="mf-col a d5" style="left:580px">
+      <div class="mf-sol"><span class="chip">Factibilidad de proyectos,</span><span class="chip">estudios de mercado</span></div>
+      <p class="mf-v">Fortalecer</p>
+      <div class="mf-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><rect x="5" y="12" width="3.5" height="8" rx="1"/><rect x="10.25" y="8" width="3.5" height="12" rx="1"/><rect x="15.5" y="4" width="3.5" height="16" rx="1"/></svg></div>
+      <p class="mf-d">Los afiliados toman mejores decisiones y La Lonja suma ingresos que reinvierte en ellos.</p>
+    </div>
+    <!-- 4 -->
+    <div class="mf-col a d6" style="left:870px">
+      <div class="mf-sol"><span class="chip">Tablero y análisis</span></div>
+      <p class="mf-v">Ser vocero calificado</p>
+      <div class="mf-node"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v3a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/></svg></div>
+      <p class="mf-d">Los indicadores de La Lonja se vuelven la referencia que citan medios, bancos y entidades públicas.</p>
+    </div>
+    <!-- outcome -->
+    <div class="mf-goal a d7">
+      <h3>Propósito central: <span>ayudar a las personas a vivir mejor</span></h3>
+      <p>Mejor información para quien compra, arrienda, construye o invierte. Es tecnología con propósito, que es como trabajamos.</p>
+    </div>
+    <div class="mf-legend a d7"><span><b class="lg-v">Aa</b>Lo que La Lonja se propone</span><span><i class="chip">Aa</i>Soluciones</span><span><b class="lg-d">—</b>Cómo aporta esta propuesta</span></div>
+  </div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-navy.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">Fuente de misión y propósito: lonja.org.co</p><span class="idt"><img src="img/logo-id-color.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">08</p></div></div>
+</section>
+
+<!-- ================= 09 IMPACTO ================= -->
+<section class="s" data-title="Qué toca en La Lonja">
+  <div class="ghost">09</div>
+  <p class="eb a">QUÉ TOCA EN LA LONJA</p>
+  <h2 class="t a d1" style="font-size:52px">La nueva área fortalece las líneas actuales y <span class="hl">abre una nueva</span></h2>
+  <table class="tb tb9 a d2">
+    <tr><th style="width:420px">Línea de La Lonja</th><th>Cómo la impacta</th><th style="width:520px">Solución que la toca</th></tr>
+    <tr><td class="k">Avalúos</td><td>Avalúos más rápidos y con mejor sustento. Más capacidad con el mismo equipo.</td><td><span class="chip">Avalúo asistido,</span><span class="chip">tablero</span></td></tr>
+    <tr><td class="k">Afiliación</td><td>Un beneficio visible y de uso diario, que ayuda a afiliar y a retener.</td><td><span class="chip">Tablero,</span><span class="chip">asesor de derecho inmobiliario</span></td></tr>
+    <tr><td class="k">Capacitación</td><td>Programas con cifras propias y formación en el uso de las herramientas.</td><td><span class="chip">Tablero,</span><span class="chip">análisis</span></td></tr>
+    <tr><td class="k">Eventos</td><td>Lanzamiento de informes e indicadores como contenido y como patrocinio.</td><td><span class="chip">Tablero,</span><span class="chip">estudios de mercado</span></td></tr>
+    <tr><td class="k">Centro de conciliación</td><td>Orientación inicial más ágil para afiliados y usuarios.</td><td><span class="chip">Asesor de derecho inmobiliario</span></td></tr>
+    <tr><td class="k">Red de negocios entre afiliados</td><td>Cada negocio registrado vale más, porque alimenta los indicadores.</td><td><span class="chip">Tablero,</span><span class="chip">factibilidad</span></td></tr>
+    <tr class="hi"><td>Línea nueva: información y análisis</td><td>Suscripciones y estudios a la medida para constructoras, bancos, inversionistas y sector público.</td><td style="font-size:28px;font-weight:800">Todas</td></tr>
+  </table>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">Líneas tomadas de lonja.org.co</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">09</p></div></div>
+</section>
+
+<!-- ================= 10 MERCADO ================= -->
+<section class="s light" data-title="Dónde quedaría La Lonja">
+  <div class="ghost">10</div>
+  <p class="eb a">DÓNDE QUEDARÍA LA LONJA</p>
+  <h2 class="t a d1" style="font-size:44px">Otros ya venden información del sector, <span class="hl">ninguno tiene la de La Lonja</span></h2>
+  <table class="tb a d2" style="margin-top:24px">
+    <tr><th style="width:270px">Quién</th><th style="width:440px">Qué hace</th><th style="width:400px">Con qué datos</th><th>Qué enseña</th></tr>
+    <tr><td class="k">Palomma</td><td>Recaudo de arriendos, adelanto de cánones, fianza y agentes de inteligencia artificial para inmobiliarias.</td><td>Pagos de arriendo de <span class="em">más de 500 empresas</span> del sector.</td><td>Los datos de las inmobiliarias sostienen un negocio que atrae inversión (ronda de <span class="em">14 millones de dólares</span> en 2026).</td></tr>
+    <tr><td class="k">Coordenada Urbana (Camacol)</td><td>Tableros, bases e informes a la medida, por pago.</td><td>Censo de proyectos de vivienda nueva.</td><td>Un gremio sí puede vender información a su sector.</td></tr>
+    <tr><td class="k">Habi (Habimetro)</td><td>Estimación gratuita del valor de una vivienda.</td><td>Ofertas y compras de vivienda usada.</td><td>Hay demanda masiva por saber cuánto vale un inmueble.</td></tr>
+    <tr><td class="k">Portales inmobiliarios</td><td>Publicación de inmuebles e informes de precios.</td><td>Precios de oferta, no de cierre.</td><td>El precio publicado no es el precio real del negocio.</td></tr>
+    <tr class="hi"><td class="k">La Lonja</td><td>Indicadores, análisis y herramientas para todo el sector.</td><td>Valor del suelo histórico, avalúos y negocios cerrados por sus afiliados.</td><td>Historia, cobertura de todos los subsectores y la neutralidad del gremio.</td></tr>
+  </table>
+  <p class="note">Palomma no es competencia directa: opera pagos y crédito. Es la prueba de que la información del sector tiene valor. Fuentes: palomma.com, Forbes Colombia (11 de noviembre de 2026), camacol.co, Valora Analitik.</p>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-navy.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt"><img src="img/logo-id-color.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">10</p></div></div>
+</section>
+
+<!-- ================= 11 OPORTUNIDAD FINTECH (nueva) ================= -->
+<section class="s" data-title="Oportunidad fintech">
+  <div class="ghost">11</div>
+  <p class="eb a">OPORTUNIDAD · FINTECH</p>
+  <h2 class="t a d1">Con los datos de La Lonja, la siguiente oportunidad <span class="hl">es fintech</span></h2>
+  <p class="finsub a d2">Cuando la base de datos y las soluciones estén funcionando, La Lonja conocerá como nadie el mercado de arrendamiento: quién arrienda, cuánto paga y cómo cumple. Ese conocimiento es la materia prima de un negocio financiero.</p>
+  <div class="fin">
+    <div class="proof a d3">
+      <p class="pk">La prueba en Colombia: Palomma</p>
+      <p class="pbig">más de 500</p>
+      <p class="plb">empresas del sector le confían sus pagos de arriendo</p>
+      <div class="pdiv"></div>
+      <p class="pbig">14 millones</p>
+      <p class="plb">de dólares en su ronda de inversión de 2026</p>
+    </div>
+    <div class="model">
+      <p class="mk a d3">Un modelo sencillo</p>
+      <div class="msteps">
+        <div class="mst a d3"><p class="mn">1</p><h3>Datos</h3><p>Contratos, cánones e historial de arrendamiento de la red de afiliados, con las autorizaciones de datos.</p></div>
+        <div class="mar a d4"><svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h36M28 3l10 9-10 9" fill="none" stroke="#86D3A3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="mst a d4"><p class="mn">2</p><h3>Evaluación</h3><p>Perfil de riesgo de cada arrendatario y de cada inmueble.</p></div>
+        <div class="mar a d5"><svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h36M28 3l10 9-10 9" fill="none" stroke="#86D3A3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="mst a d5"><p class="mn">3</p><h3>Producto financiero</h3><p>Adelanto de cánones, fianza y recaudo, con un aliado financiero.</p></div>
+        <div class="mar a d6"><svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h36M28 3l10 9-10 9" fill="none" stroke="#86D3A3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="mst hi a d6"><p class="mn">4</p><h3>Ingreso</h3><p>Una comisión por cada operación, recurrente mes a mes.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="tease a d7"><p><b>Lo que Palomma hace con los pagos, La Lonja podría hacerlo con la información que ya tiene.</b> Un abrebocas para explorar después de las primeras etapas.</p></div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">11</p></div></div>
+</section>
+
+<!-- ================= 11 GANANCIA ================= -->
+<section class="s" data-title="Cuánto · Qué se gana">
+  <div class="ghost">12</div>
+  <p class="eb a">CUÁNTO · QUÉ SE GANA</p>
+  <h2 class="t a d1">Gana La Lonja y <span class="hl">gana el afiliado</span></h2>
+  <div class="two">
+    <div class="c a d2" style="border-top:6px solid var(--cyan)"><h3 class="who c1">La Lonja</h3><ul class="ul"><li>Ingresos nuevos y recurrentes, distintos a cuotas, ferias y formación.</li><li>Una base de datos propia y ordenada, que es un activo del gremio.</li><li>Posición de referencia: quien quiera cifras del mercado, viene a La Lonja.</li><li>Un beneficio visible que ayuda a afiliar y a retener.</li></ul></div>
+    <div class="c a d3" style="border-top:6px solid var(--lime)"><h3 class="who c2">El afiliado</h3><ul class="ul"><li>Indicadores de su zona y de su negocio, cuando los necesita.</li><li>Cómo va frente al mercado.</li><li>Avalúos y análisis más rápidos y mejor sustentados.</li><li>Respaldo de La Lonja frente a sus propios clientes.</li></ul></div>
+  </div>
+  <div class="fhd a d4"><p>Solución</p><p></p><p>De dónde viene el ingreso</p></div>
+  <div class="flow3" style="margin-top:10px">
+    <div class="fr3 a d4"><div class="src">Tablero de indicadores</div><div class="to"><svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h36M28 3l10 9-10 9" fill="none" stroke="#86D3A3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="rev">Suscripción de afiliados y de terceros. Patrocinio de la versión pública.</div></div>
+    <div class="fr3 a d5"><div class="src">Análisis y factibilidad</div><div class="to"><svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h36M28 3l10 9-10 9" fill="none" stroke="#86D3A3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="rev">Estudios a la medida por encargo y suscripción superior con modelos.</div></div>
+    <div class="fr3 a d6"><div class="src">Avalúo asistido</div><div class="to"><svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true"><path d="M2 12h36M28 3l10 9-10 9" fill="none" stroke="#86D3A3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="rev">Cobro por uso o por avalúo.</div></div>
+  </div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-white.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="pill">PROYECCIÓN DE FLUJO DE CAJA: POR COMPLETAR</p><span class="idt dk"><img src="img/logo-id-white.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">12</p></div></div>
+</section>
+
+<!-- ================= 12 ALIANZA ================= -->
+<section class="s light" data-title="Cómo trabajaríamos juntos">
+  <div class="ghost">13</div>
+  <p class="eb a">CÓMO TRABAJARÍAMOS JUNTOS</p>
+  <h2 class="t a d1" style="font-size:56px">Una alianza donde cada uno pone <span class="hl">lo que mejor sabe hacer</span></h2>
+  <div class="ally">
+    <div class="ally-line g d2" aria-hidden="true"></div>
+    <div class="ap p-ll a d2">
+      <div class="slot alogo" data-img="img/12-logo-la-lonja.png"><p class="sl"><b>Logo</b>12-logo-la-lonja.png</p></div>
+      <h3 class="an">La Lonja</h3>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5 20 20M7 11l2-2 2 2 2-3"/></svg></span><p>La información y el criterio para interpretarla.</p></div>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><p>La marca y la confianza del gremio.</p></div>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v4M12 11.5 6.5 16M12 11.5l5.5 4.5"/></svg></span><p>La red de afiliados y el cierre comercial.</p></div>
+    </div>
+    <div class="ap p-id a d3">
+      <div class="slot alogo" data-img="img/12-logo-id-technology.png"><p class="sl"><b>Logo</b>12-logo-id-technology.png</p></div>
+      <h3 class="an">ID Technology</h3>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span><p>Ingeniería de datos y construcción de las soluciones.</p></div>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span><p>Operación, soporte y evolución de la plataforma.</p></div>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><p>Seguridad y manejo responsable de la información.</p></div>
+    </div>
+    <div class="ap p-gr a d4">
+      <div class="slot alogo" data-img="img/12-logo-grow.png"><p class="sl"><b>Logo</b>12-logo-grow.png</p></div>
+      <h3 class="an">Grow</h3>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 10h7M8.5 14h7M8.5 18h4"/></svg></span><p>Modelo y plan de negocio de cada solución.</p></div>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M5 16l4-5 4 3 6-8M15 6h4v4"/></svg></span><p>Proyección financiera y precios.</p></div>
+      <div class="ci"><span class="cic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15l-3-3c1.5-4 4.5-7 9-8-1 4.5-4 7.5-8 9z"/><path d="M9 12H5l2-3h4M12 15v4l3-2v-4"/></svg></span><p>Estructuración del crecimiento y de la visión de inversión.</p></div>
+    </div>
+    <div class="aplus" style="left:calc(33.333% - 6px)" aria-hidden="true">+</div>
+    <div class="aplus" style="left:calc(66.666% + 6px)" aria-hidden="true">+</div>
+  </div>
+  <div class="rules">
+    <div class="rl a d5">
+      <svg class="rv" viewBox="0 0 120 80" aria-label="Etapas sucesivas, cada una con decisión"><rect x="6" y="52" width="22" height="22" rx="4" fill="#047D90"/><rect x="34" y="40" width="22" height="34" rx="4" fill="#047D90" opacity=".75"/><rect x="62" y="28" width="22" height="46" rx="4" fill="#047D90" opacity=".5"/><rect x="90" y="16" width="22" height="58" rx="4" fill="#047D90" opacity=".3"/><rect x="27" y="40" width="9" height="9" transform="rotate(45 31.5 44.5)" fill="#fff" stroke="#1E2939" stroke-width="2"/><rect x="55" y="28" width="9" height="9" transform="rotate(45 59.5 32.5)" fill="#fff" stroke="#1E2939" stroke-width="2"/><rect x="83" y="16" width="9" height="9" transform="rotate(45 87.5 20.5)" fill="#fff" stroke="#1E2939" stroke-width="2"/></svg>
+      <div><h3>Por etapas</h3><p>Se empieza por una etapa corta con entregable. Cada etapa se decide por separado.</p></div>
+    </div>
+    <div class="rl a d6">
+      <svg class="rv" viewBox="0 0 120 80" aria-label="Balanza con los aportes de las tres partes"><path d="M60 14v52M40 70h40M18 30h84" stroke="#1E2939" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="60" cy="12" r="4" fill="#1E2939"/><rect x="14" y="18" width="16" height="12" rx="3" fill="#38B6B3"/><rect x="52" y="18" width="16" height="12" rx="3" fill="#1E7B3C"/><rect x="90" y="18" width="16" height="12" rx="3" fill="#2F6FB5"/><path d="M22 30l-10 18h20zM98 30l-10 18h20z" fill="none" stroke="#1E2939" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      <div><h3>Aportes valorados</h3><p>Lo que pone cada parte se valora de forma abierta y de ahí sale la participación.</p></div>
+    </div>
+    <div class="rl a d7">
+      <svg class="rv" viewBox="0 0 120 80" aria-label="Primero la operación, después los resultados"><rect x="4" y="18" width="46" height="46" rx="10" fill="#1E2939"/><circle cx="27" cy="41" r="8" fill="none" stroke="#86D3A3" stroke-width="3"/><path d="M27 27v5M27 50v5M13 41h5M36 41h5" stroke="#86D3A3" stroke-width="3" stroke-linecap="round"/><path d="M56 41h12M63 35l6 6-6 6" fill="none" stroke="#1E2939" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="72" y="18" width="46" height="46" rx="10" fill="#86D3A3"/><ellipse cx="95" cy="33" rx="12" ry="4.5" fill="none" stroke="#1E2939" stroke-width="2.5"/><path d="M83 33v8c0 2.5 5.4 4.5 12 4.5s12-2 12-4.5v-8M83 41v8c0 2.5 5.4 4.5 12 4.5s12-2 12-4.5v-8" fill="none" stroke="#1E2939" stroke-width="2.5"/><text x="20" y="14" font-family="Outfit,Arial" font-size="12" font-weight="800" fill="#1E2939">1</text><text x="88" y="14" font-family="Outfit,Arial" font-size="12" font-weight="800" fill="#1E2939">2</text></svg>
+      <div><h3>La operación primero</h3><p>Los costos de sostener la plataforma se cubren antes de repartir resultados.</p></div>
+    </div>
+  </div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-navy.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="pill">MODELO DE ALIANZA: POR DEFINIR ENTRE LAS PARTES</p><span class="idt"><img src="img/logo-id-color.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">13</p></div></div>
+</section>
+
+<!-- ================= 13 PASOS ================= -->
+<section class="s limebg" data-title="Siguientes pasos">
+  <div class="ghost">14</div>
+  <p class="eb a">SIGUIENTES PASOS</p>
+  <h2 class="t a d1">Lo que proponemos hacer en las próximas semanas</h2>
+  <div class="track">
+    <div class="rail g d2"></div>
+    <div class="ps a d2"><p class="num">1</p><div class="box"><h3>Acuerdo de confidencialidad</h3><p>Para poder conocer la información con tranquilidad para todos.</p></div></div>
+    <div class="ps a d3"><p class="num">2</p><div class="box"><h3>Sesión con tecnología e innovación</h3><p>Entender dónde está cada fuente y en qué formato.</p></div></div>
+    <div class="ps a d4"><p class="num">3</p><div class="box"><h3>Inventario de datos</h3><p>Qué hay, desde cuándo, de quién es y qué se puede construir con ello.</p></div></div>
+    <div class="ps a d5"><p class="num">4</p><div class="box"><h3>Decisión sobre el tablero</h3><p>Alcance, tiempos y acuerdo de la primera etapa.</p></div></div>
+  </div>
+  <div class="need a d6"><div class="slot nimg" data-img="img/13-sesion.jpg"><p class="sl"><b>Imagen</b>img/13-sesion.jpg</p></div><h3>Qué necesitamos de La Lonja para arrancar</h3><p>Una persona que conozca los datos, acceso de consulta o una muestra de cada fuente, claridad sobre qué información es de La Lonja y cuál es de afiliados o terceros, y el plan de negocios que ya tienen, para construir sobre él.</p></div>
+  <div class="ft"><img class="lglogo" src="img/logo-lalonja-navy.png" width="150" height="65" alt="La Lonja, El gremio inmobiliario"><div class="r"><p class="tx">ID Technology · Grow</p><span class="idt"><img src="img/logo-id-color.png" alt="ID"><span>TECHNOLOGY</span></span><p class="pg">14</p></div></div>
+</section>
+
+<!-- ================= 15 CIERRE ================= -->
+<section class="s closing" data-title="Cierre">
+  <svg class="cl-art" width="1920" height="1080" viewBox="0 0 1920 1080" aria-hidden="true"><path d="M1480 -40 C1760 40 1980 260 1960 520 L1960 -40 Z" fill="#047D90" opacity=".55"/><path d="M1580 1120 C1600 900 1780 800 1960 820 L1960 1120 Z" fill="#86D3A3" opacity=".9"/><path d="M-40 1120 C0 1050 90 1035 170 1060 C200 1072 220 1095 225 1120 Z" fill="#38B6B3" opacity=".55"/></svg>
+  <div class="cl-in">
+    <h2 class="cl-l a d1">Representar <span>con datos.</span></h2>
+    <h2 class="cl-l a d2">Profesionalizar <span>con tecnología.</span></h2>
+    <h2 class="cl-l a d3">Fortalecer <span>con resultados.</span></h2>
+    <h2 class="cl-l cl-go a d5">Listos para empezar.</h2>
+    <p class="cl-p a d6">Para ayudar a las personas a vivir mejor.</p>
+  </div>
+  <div class="cl-logos a d7">
+    <img src="img/logo-lalonja-white.png" alt="La Lonja, El gremio inmobiliario" class="cl-ll">
+    <span class="cl-sep"></span>
+    <img src="img/logo-id-white.png" alt="ID Technology" class="cl-id">
+    <span class="cl-sep"></span>
+    <span class="cl-gr"><img src="img/12-logo-grow.png" alt="Grow finance"></span>
+  </div>
+</section>
+
+</div>
+
+<div id="ov" role="dialog" aria-label="Vista general de diapositivas"><h2>Todas las diapositivas</h2><div class="grid" id="ovg"></div></div>
+<div id="hint">← → navegar · G vista general · F pantalla completa</div>
+<div id="hud"><span id="n"></span><button id="pv" aria-label="Anterior">←</button><button id="nx" aria-label="Siguiente">→</button><button id="og" aria-label="Vista general">▦</button><button id="fs" aria-label="Pantalla completa">⛶</button></div>
+
+<script>
+(function(){
+  var st=document.getElementById('stage'), ss=[].slice.call(st.querySelectorAll('.s')), i=0;
+  var n=document.getElementById('n'), prog=document.getElementById('prog'), ov=document.getElementById('ov'), ovg=document.getElementById('ovg');
+  // image slots: show the file if it exists in img/, otherwise keep the placeholder
+  [].forEach.call(document.querySelectorAll('.slot[data-img]'),function(sl){
+    var im=new Image(); im.alt=''; im.onload=function(){sl.appendChild(im);sl.classList.add('filled')}; im.src=sl.getAttribute('data-img');
+  });
+  function fit(){var k=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform='translate(-50%,-50%) scale('+k+')'}
+  function go(j){
+    i=Math.max(0,Math.min(ss.length-1,j));
+    ss.forEach(function(s,k){s.classList.toggle('on',k===i)});
+    n.textContent=String(i+1).padStart(2,'0')+' / '+ss.length;
+    prog.style.width=((i+1)/ss.length*100)+'%';
+    try{history.replaceState(null,'','#'+(i+1))}catch(e){}
+  }
+  function overview(open){
+    if(open){
+      ovg.innerHTML='';
+      ss.forEach(function(s,k){
+        var th=document.createElement('div');th.className='th'+(k===i?' cur':'');
+        var mini=document.createElement('div');mini.className='mini';var c=s.cloneNode(true);c.classList.add('on');mini.appendChild(c);th.appendChild(mini);
+        var no=document.createElement('span');no.className='no';no.textContent=(k+1)+' · '+(s.getAttribute('data-title')||'');th.appendChild(no);
+        th.onclick=function(){go(k);overview(false)};ovg.appendChild(th);
+      });
+      ov.classList.add('open');
+      [].forEach.call(ovg.querySelectorAll('.th'),function(th){th.querySelector('.mini').style.transform='scale('+(th.clientWidth/1920)+')'});
+    } else ov.classList.remove('open');
+  }
+  addEventListener('resize',fit);
+  addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='g'||k==='G'){overview(!ov.classList.contains('open'));return}
+    if(k==='Escape'){overview(false);return}
+    if(k==='f'||k==='F'){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();return}
+    if(ov.classList.contains('open'))return;
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(k)>-1){go(i+1);e.preventDefault()}
+    if(['ArrowLeft','PageUp','Backspace'].indexOf(k)>-1){go(i-1);e.preventDefault()}
+    if(k==='Home')go(0); if(k==='End')go(ss.length-1);
+  });
+  document.getElementById('nx').onclick=function(){go(i+1)};
+  document.getElementById('pv').onclick=function(){go(i-1)};
+  document.getElementById('og').onclick=function(){overview(true)};
+  document.getElementById('fs').onclick=function(){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+  var tx=null;addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)go(i+(dx<0?1:-1));tx=null});
+  fit(); go((parseInt(location.hash.slice(1),10)||1)-1);
+})();
+</script>
+</body>
+</html>
